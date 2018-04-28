@@ -1,0 +1,13 @@
+testSAM Operation
+
+The program will pass the input from receiver ELEV (right stick elevator) to the flap servo (attached to pin D6). The input from receiver THRO (left stick throttle) is passed to the motor controller (ESC), which is attached to pin D5. The signal from receiver Flight Mode switch is used to activate data recording.
+
+After battery power is applied, the LED on the Metro Mini will blink for 20 seconds. During this time, the servo command and motor controller are disabled for safety. After 20 seconds, the flap servo and motor controller should be active, allowing the flight test to begin.
+
+Data recording is activated when Flight Mode switch is set to 2 (switch toggled toward operator). The Metro Mini LED will turn on while data is being recorded to the FRAM module. After about 15 seconds of recording time, the LED will turn off to indicate the FRAM module is full.
+
+getSAM Operation
+
+The getSAM program retrieves data from the FRAM module. Disconnect the vehicle battery and connect the Metro Mini to your PC. Compile and upload the program to the Metro Mini. After a five second delay, your recorded data should appear on the PC Monitor in comma-separated format. You can then cut-and-paste the data from the PC Monitor to a spreadsheet program for plotting and analysis. The testIMU program demonstrates how to convert the recorded measurements (integers) into engineering units. Note that the getSAM program overwrites the testSAM program whenever you retrieve data. You will need to upload testSAM again for your next flight test.
+
+
