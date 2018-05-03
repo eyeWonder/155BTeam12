@@ -5,7 +5,7 @@
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
 }
 
 void loop()
@@ -14,5 +14,5 @@ void loop()
  
   Serial.println(sensorValue);
 
-  delay(200);
+  delay(10);
 }

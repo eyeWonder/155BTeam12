@@ -17,7 +17,7 @@ void setup()
   pinMode(9, INPUT);        // GEAR input pin D9
   pinMode(10, INPUT);       // ELEV input pin D10
   pinMode(11, INPUT);       // THRO input D11
-  
+  pinMode(5, OUTPUT);       // THRO output D5  
   PCMSK0 |= bit(PCINT1);    // interrupt D9
   PCMSK0 |= bit(PCINT2);    // interrupt D10
   PCMSK0 |= bit(PCINT3);    // interrupt D11
@@ -27,13 +27,14 @@ void setup()
 
 void loop()
 {
+  analogWrite( 5, 1500);
   Serial.print(pwm_ch1);
   Serial.print(" ");
   Serial.print(pwm_ch2);
   Serial.print(" ");
   Serial.println(pwm_ch3);
-  
   delay(200);
+  
 }
 
 // receiver interrupts
