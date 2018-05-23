@@ -5,19 +5,25 @@
 // Rx THRO input to D11
 // Rx ELEV input to D10
 // Rx GEAR input to D9
+#include <Servo.h>
 
+Servo myservo;
+Servo motor;
 volatile unsigned long pwm_ch1 = 0;  // D11
 volatile unsigned long pwm_ch2 = 0;  // D10
-volatile unsigned long pwm_ch3 = 0;  // D9
-
+float throttle = 0;
+float servo = 0;
 void setup()
 {
-  Serial.begin(9600);
   
+  Serial.begin(9600);
+  myservo.attach(6);
+  motor.attach(4);
+  motor.writeMicroseconds(1000);
+  delay(3000);
   pinMode(9, INPUT);        // GEAR input pin D9
   pinMode(10, INPUT);       // ELEV input pin D10
   pinMode(11, INPUT);       // THRO input D11
-  pinMode(5, OUTPUT);       // THRO output D5  
   PCMSK0 |= bit(PCINT1);    // interrupt D9
   PCMSK0 |= bit(PCINT2);    // interrupt D10
   PCMSK0 |= bit(PCINT3);    // interrupt D11
@@ -27,13 +33,17 @@ void setup()
 
 void loop()
 {
-  analogWrite( 5, 1500);
+  
+  servo = constrain((uint32_t)180*abs(pwm_ch2-1192)/(1800-1192), 0, 180);
+  throttle = constrain((uint32_t)45 + 55*abs(pwm_ch1-1072)/(1908-1072), 45, 100);
+  if (pwm_ch1>1000) motor.write(throttle);
+  myservo.write(servo);
+  Serial.print(throttle);
+  Serial.print(" ");
   Serial.print(pwm_ch1);
   Serial.print(" ");
-  Serial.print(pwm_ch2);
-  Serial.print(" ");
-  Serial.println(pwm_ch3);
-  delay(200);
+  Serial.println(pwm_ch2);
+  delay(15);
   
 }
 
@@ -44,9 +54,6 @@ volatile unsigned long timeA1 = 0, timeA2 = 0, timeA3 = 0;
 
 volatile int pwm_state_B = 0;
 volatile unsigned long timeB1 = 0, timeB2 = 0, timeB3 = 0;
-
-volatile int pwm_state_C = 0;
-volatile unsigned long timeC1 = 0, timeC2 = 0, timeC3 = 0;
 
 // interrupt handler
 
@@ -62,6 +69,9 @@ ISR (PCINT0_vect)
     if (pwm_ch1 > timeA2 - timeA1) pwm_ch1 = timeA2 - timeA1;
     
     pwm_state_A = !pwm_state_A;
+    analogWrite( 5, pwm_ch1);
+
+    
   }
   
   if (pwm_state_B != digitalRead(10))
@@ -74,17 +84,5 @@ ISR (PCINT0_vect)
     if (pwm_ch2 > timeB2 - timeB1) pwm_ch2 = timeB2 - timeB1;
     
     pwm_state_B = !pwm_state_B;
-  }
-  
-  if (pwm_state_C != digitalRead(9))
-  {
-    timeC1 = timeC2;
-    timeC2 = timeC3;
-    timeC3 = micros();
-  
-    pwm_ch3 = timeC3 - timeC2;
-    if (pwm_ch3 > timeC2 - timeC1) pwm_ch3 = timeC2 - timeC1;
-    
-    pwm_state_C = !pwm_state_C;
   }
 }
